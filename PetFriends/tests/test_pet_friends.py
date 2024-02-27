@@ -8,6 +8,7 @@ def test_get_api_key_for_valid_user(email=valid_email, password=valid_password):
     """ Проверяем, что запрос api ключа возвращает статус 200 и в результате содержится слово key"""
 
     status, result = pf.get_api_key(email, password)
+
     assert status == 200
     assert 'key' in result
 
@@ -19,6 +20,7 @@ def test_get_all_pets_with_valid_key(filter=''):
 
     _, auth_key = pf.get_api_key(valid_email, valid_password)
     status, result = pf.get_list_of_pets(auth_key, filter)
+
     assert status == 200
     assert len(result['pets']) > 0
 
@@ -30,8 +32,12 @@ def test_add_new_pet_with_valid_data(name='Барбоскин', animal_type='о�
     _, auth_key = pf.get_api_key(valid_email, valid_password)
 
     status, result = pf.add_new_pet(auth_key, name, animal_type, age, pet_photo)
+
     assert status == 200
     assert result['name'] == name
+    assert result['animal_type'] == animal_type
+    assert result['age'] == age
+    assert result['pet_photo'] == pet_photo
 
 def test_delete_pet_with_valid_data(pet_id=''):
     """Проверяем возможность удаления питомца"""
@@ -40,7 +46,7 @@ def test_delete_pet_with_valid_data(pet_id=''):
     _, my_pets = pf.get_list_of_pets(auth_key, "my_pets")
 
     if len(my_pets['pets']) == 0:
-        pf.add_new_pet(auth_key, "Барбоскин", "овчарка", 2, "images/dog.jpg")
+        pf.add_new_pet(auth_key, "Барбоскин", "овчарка", '2', "images/dog.jpg")
         _, my_pets = pf.get_list_of_pets(auth_key, "my_pets")
 
     pet_id = my_pets['pets'][0]['id']
@@ -62,17 +68,22 @@ def test_successful_update_self_pet_info(name='Мурзик', animal_type='Ко�
 
         assert status == 200
         assert result['name'] == name
+        assert result['animal_type'] == animal_type
+        assert result['age'] == age
     else:
         raise Exception("There is no my pets")
 
-def test_add_new_pet_with_valid_data_without_photo(name='Барбоскин', animal_type='овчарка', age='2'):
+def test_add_new_pet_simple_with_valid_data(name='Барбоскин', animal_type='овчарка', age='2'):
     """Проверяем, что можно добавить питомца с корректными данными (но без фото)"""
 
     _, auth_key = pf.get_api_key(valid_email, valid_password)
 
-    status, result = pf.add_new_pet_without_photo(auth_key, name, animal_type, age)
+    status, result = pf.add_new_pet_simple(auth_key, name, animal_type, age)
+
     assert status == 200
     assert result['name'] == name
+    assert result['animal_type'] == animal_type
+    assert result['age'] == age
 
 def test_add_photo_pet_with_valid_data(pet_photo='images/dog.jpg'):
     """Проверяем, что можно добавить фото питомца с корректными данными"""
@@ -83,7 +94,7 @@ def test_add_photo_pet_with_valid_data(pet_photo='images/dog.jpg'):
     _, my_pets = pf.get_list_of_pets(auth_key, "my_pets")
 
     if len(my_pets['pets']) == 0:
-        pf.add_new_pet_without_photo(auth_key, "Барбоскин", "овчарка", 2)
+        pf.add_new_pet_simple(auth_key, "Барбоскин", "овчарка", '2')
         _, my_pets = pf.get_list_of_pets(auth_key, "my_pets")
 
     pet_id = my_pets['pets'][0]['id']
@@ -93,6 +104,7 @@ def test_add_photo_pet_with_valid_data(pet_photo='images/dog.jpg'):
 
     assert status == 200
     assert result['pet_photo'] == pet_photo
+    
 # 1.1
 def test_unsuccessful_get_api_key_with_invalid_email(email=invalid_email, password=valid_password):
     """ Проверяем, что запрос api ключа возвращает статус 403 и в результате нет ключа"""
@@ -110,6 +122,7 @@ def test_unsuccessful_get_api_key_with_invalid_password(email=valid_email, passw
 
     assert status == 403
     assert 'key' not in result
+    
 # 3.3
 def test_unsuccessful_get_api_key_for_invalid_user(email=invalid_email, password=invalid_password):
     """ Проверяем, что запрос api ключа возвращает статус 403 и в результате нет ключа"""
@@ -118,6 +131,7 @@ def test_unsuccessful_get_api_key_for_invalid_user(email=invalid_email, password
 
     assert status == 403
     assert 'key' not in result
+    
 # 4.4
 def test_unsuccessful_add_new_pet_with_invalid_age(name='Дог', animal_type='двортерьер', age='-2', pet_photo='images/dog.jpg'):
     """Проверяем, что нельзя добавить питомца с некорректными данными (отрицательным возрастом).
@@ -129,11 +143,10 @@ def test_unsuccessful_add_new_pet_with_invalid_age(name='Дог', animal_type='�
     status, result = pf.add_new_pet(auth_key, name, animal_type, age, pet_photo)
 
     assert status == 400
-    assert ['age'] != age
 
 # 5.5
-def test_unsuccessful_add_new_pet_with_invalid_data_age(name='Барбоскин', animal_type='овчарка', age='', pet_photo='images/dog.jpg'):
-    """Проверяем, что нельзя добавить питомца с некорректными данными (возраст - пустая строка).
+def test_unsuccessful_add_new_pet_with_invalid_name(name='', animal_type='овчарка', age='2', pet_photo='images/dog.jpg'):
+    """Проверяем, что нельзя добавить питомца с некорректными данными (имя - пустая строка).
     На данный момент здесь присутствует баг. Ожидается статус ответа 400, а приходит 200. Питомец с
     некорректными данными добавлен на сайт."""
 
@@ -142,7 +155,6 @@ def test_unsuccessful_add_new_pet_with_invalid_data_age(name='Барбоскин
     status, result = pf.add_new_pet(auth_key, name, animal_type, age, pet_photo)
 
     assert status == 400
-    assert ['age'] != age
 
 # 6.6
 def test_unsuccessful_add_new_pet_with_invalid_photo(name='Барбоскин', animal_type='овчарка', age='2', pet_photo='images/video.mp4'):
@@ -155,31 +167,28 @@ def test_unsuccessful_add_new_pet_with_invalid_photo(name='Барбоскин', 
     status, result = pf.add_new_pet(auth_key, name, animal_type, age, pet_photo)
 
     assert status == 400
-    assert ['pet_photo'] != pet_photo
 
 # 7.7
-def test_unsuccessful_add_new_pet_with_invalid_data_without_photo(name='Барбоскин', animal_type='овчарка', age='-2'):
-    """ Проверяем, что нельзя добавить питомца с некорректными данными (с отрицательным возрастом).
+def test_unsuccessful_add_new_pet_simple_with_invalid_animal_type(name='Барбоскин', animal_type='', age='2'):
+    """ Проверяем, что нельзя добавить питомца с некорректными данными (тип животного - пустая строка).
     На данный момент здесь присутствует баг. Ожидается статус ответа 400, а приходит 200. Питомец с
     некорректными данными добавлен на сайт."""
 
     _, auth_key = pf.get_api_key(valid_email, valid_password)
-    status, result = pf.add_new_pet_without_photo(auth_key, name, animal_type, age)
+    status, result = pf.add_new_pet_simple(auth_key, name, animal_type, age)
 
     assert status == 400
-    assert ['age'] != age
 
 # 8.8
-def test_unsuccessful_add_new_pet_with_invalid_age_without_photo(name='Барбоскин', animal_type='овчарка', age=''):
+def test_unsuccessful_add_new_pet_simple_with_invalid_age(name='Барбоскин', animal_type='овчарка', age=''):
     """ Проверяем, что нельзя добавить питомца с некорректными данными (возраст - пустая строка).
     На данный момент здесь присутствует баг. Ожидается статус ответа 400, а приходит 200. Питомец с
     некорректными данными добавлен на сайт."""
 
     _, auth_key = pf.get_api_key(valid_email, valid_password)
-    status, result = pf.add_new_pet_without_photo(auth_key, name, animal_type, age)
+    status, result = pf.add_new_pet_simple(auth_key, name, animal_type, age)
 
     assert status == 400
-    assert ['age'] != age
 
 # 9.9
 def test_unsuccessful_update_self_pet_info_age(name='Дог', animal_type='двортерьер', age='-5'):
@@ -194,12 +203,12 @@ def test_unsuccessful_update_self_pet_info_age(name='Дог', animal_type='дв�
         status, result = pf.update_pet_info(auth_key, my_pets['pets'][0]['id'], name, animal_type, age)
 
         assert status == 400
-        assert result['age'] != age
     else:
         raise Exception('There is no my pets')
+        
 # 10.10
-def test_unsuccessful_update_self_pet_info(name='Дог', animal_type='двортерьер', age='b'):
-    """Проверяем, что нельзя изменить возраст питомца на строку.
+def test_unsuccessful_update_self_pet_info(name='', animal_type='двортерьер', age='5'):
+    """Проверяем, что нельзя изменить имя питомца на пустую строку.
     На данный момент здесь присутствует баг. Ожидается статус ответа 400, а приходит 200.
     Возраст питомца изменен."""
 
@@ -210,7 +219,6 @@ def test_unsuccessful_update_self_pet_info(name='Дог', animal_type='двор�
         status, result = pf.update_pet_info(auth_key, my_pets['pets'][0]['id'], name, animal_type, age)
 
         assert status == 400
-        assert result['age'] != age
     else:
         raise Exception('There is no my pets')
 
