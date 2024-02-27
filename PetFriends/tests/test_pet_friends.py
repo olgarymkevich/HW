@@ -203,11 +203,12 @@ def test_unsuccessful_update_self_pet_info_age(name='Дог', animal_type='дв�
         status, result = pf.update_pet_info(auth_key, my_pets['pets'][0]['id'], name, animal_type, age)
 
         assert status == 400
+        assert result['age'] != age
     else:
         raise Exception('There is no my pets')
         
 # 10.10
-def test_unsuccessful_update_self_pet_info(name='', animal_type='двортерьер', age='5'):
+def test_unsuccessful_update_self_pet_info_name(name='', animal_type='двортерьер', age='5'):
     """Проверяем, что нельзя изменить имя питомца на пустую строку.
     На данный момент здесь присутствует баг. Ожидается статус ответа 400, а приходит 200.
     Возраст питомца изменен."""
@@ -219,6 +220,7 @@ def test_unsuccessful_update_self_pet_info(name='', animal_type='двортер�
         status, result = pf.update_pet_info(auth_key, my_pets['pets'][0]['id'], name, animal_type, age)
 
         assert status == 400
+        assert result['name'] != name
     else:
         raise Exception('There is no my pets')
 
