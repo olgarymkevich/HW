@@ -23,6 +23,7 @@ class PetFriends:
             result = res.json()
         except json.decoder.JSONDecodeError:
             result = res.text
+        print(result)
         return status, result
 
     def get_list_of_pets(self, auth_key: json, filter: str = "") -> json:
@@ -41,6 +42,7 @@ class PetFriends:
             result = res.json()
         except json.decoder.JSONDecodeError:
             result = res.text
+        print(result)
         return status, result
 
     def add_new_pet(self, auth_key: json, name: str, animal_type: str, age: str, pet_photo: any) -> json:
@@ -64,6 +66,7 @@ class PetFriends:
             result = res.json()
         except json.decoder.JSONDecodeError:
             result = res.text
+        print(result)
         return status, result
 
     def delete_pet(self, auth_key: json, pet_id: str) -> json:
@@ -79,6 +82,7 @@ class PetFriends:
             result = res.json()
         except json.decoder.JSONDecodeError:
             result = res.text
+        print(result)
         return status, result
 
     def update_pet_info(self, auth_key: json, pet_id: str, name: str, animal_type: str, age: str) -> json:
@@ -99,9 +103,10 @@ class PetFriends:
             result = res.json()
         except json.decoder.JSONDecodeError:
             result = res.text
+        print(result)
         return status, result
 
-    def add_new_pet_without_photo(self, auth_key, name, animal_type, age):
+    def add_new_pet_simple(self, auth_key, name, animal_type, age):
         """Метод отправляет (постит) на сервер данные (все, кроме фото) о добавляемом питомце и возвращает статус
         запроса на сервер и результат в формате JSON с данными добавленного питомца"""
 
@@ -121,6 +126,7 @@ class PetFriends:
             result = res.json()
         except json.decoder.JSONDecodeError:
             result = res.text
+        print(result)
         return status, result
 
     def add_photo_pet(self, auth_key, pet_id, pet_photo):
@@ -138,9 +144,8 @@ class PetFriends:
             result = res.json()
         except json.decoder.JSONDecodeError:
             result = res.text
+        print(result)
         return status, result
-
-
 
 
 
