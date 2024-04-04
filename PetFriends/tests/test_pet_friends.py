@@ -104,6 +104,7 @@ def test_add_photo_pet_with_valid_data(pet_photo='images/dog.jpg'):
 
     assert status == 200
     assert result['pet_photo'] == pet_photo
+    
 # 1.1
 def test_unsuccessful_get_api_key_with_invalid_email(email=invalid_email, password=valid_password):
     """ Проверяем, что запрос api ключа возвращает статус 403 и в результате нет ключа"""
@@ -121,6 +122,7 @@ def test_unsuccessful_get_api_key_with_invalid_password(email=valid_email, passw
 
     assert status == 403
     assert 'key' not in result
+    
 # 3.3
 def test_unsuccessful_get_api_key_for_invalid_user(email=invalid_email, password=invalid_password):
     """ Проверяем, что запрос api ключа возвращает статус 403 и в результате нет ключа"""
@@ -129,6 +131,7 @@ def test_unsuccessful_get_api_key_for_invalid_user(email=invalid_email, password
 
     assert status == 403
     assert 'key' not in result
+    
 # 4.4
 def test_unsuccessful_add_new_pet_with_invalid_age(name='Дог', animal_type='двортерьер', age='-2', pet_photo='images/dog.jpg'):
     """Проверяем, что нельзя добавить питомца с некорректными данными (отрицательным возрастом).
@@ -203,6 +206,7 @@ def test_unsuccessful_update_self_pet_info_age(name='Дог', animal_type='дв�
         assert result['age'] != age
     else:
         raise Exception('There is no my pets')
+        
 # 10.10
 def test_unsuccessful_update_self_pet_info_name(name='', animal_type='двортерьер', age='5'):
     """Проверяем, что нельзя изменить имя питомца на пустую строку.
